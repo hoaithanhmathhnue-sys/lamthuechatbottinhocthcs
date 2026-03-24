@@ -3,38 +3,24 @@ import { MapPin, School, Award, BookOpen, Star, Heart } from 'lucide-react';
 
 export function AuthorProfile() {
   return (
-    <div className="min-h-full bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 dark:from-slate-900 dark:via-indigo-950 dark:to-slate-900 p-6">
+    <div className="min-h-full bg-gradient-to-br from-teal-50 via-emerald-50 to-cyan-50 dark:from-slate-900 dark:via-teal-950 dark:to-slate-900 p-6">
       {/* Hero Section */}
       <div className="max-w-2xl mx-auto">
         {/* Card chính */}
         <div className="relative rounded-3xl overflow-hidden shadow-2xl">
           {/* Background gradient */}
-          <div className="absolute inset-0 bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-600 opacity-90" />
+          <div className="absolute inset-0 bg-gradient-to-br from-teal-600 via-emerald-600 to-cyan-600 opacity-90" />
 
           {/* Glassmorphism overlay */}
           <div className="absolute inset-0 backdrop-blur-sm bg-white/10" />
 
           {/* Content */}
           <div className="relative z-10 p-8 text-white">
-            {/* Logo + Avatar */}
+            {/* Icon thay cho avatar */}
             <div className="flex flex-col items-center gap-4 mb-8">
-
-              {/* Avatar */}
               <div className="relative">
-                <div className="w-32 h-32 rounded-full p-1 bg-gradient-to-br from-yellow-400 via-pink-400 to-indigo-400 shadow-2xl">
-                  <div className="w-full h-full rounded-full overflow-hidden border-2 border-white/60">
-                    <img
-                      src="/avatar.jpg"
-                      alt="Phạm Thị Bình"
-                      className="w-full h-full object-cover"
-                      onError={(e) => {
-                        const el = e.target as HTMLImageElement;
-                        el.style.display = 'none';
-                        el.parentElement!.classList.add('flex', 'items-center', 'justify-center');
-                        el.parentElement!.innerHTML = '<span class="text-4xl">👩‍🏫</span>';
-                      }}
-                    />
-                  </div>
+                <div className="w-28 h-28 rounded-full bg-gradient-to-br from-amber-400 via-orange-400 to-pink-400 shadow-2xl flex items-center justify-center">
+                  <span className="text-5xl">👩‍🏫</span>
                 </div>
                 {/* Badge */}
                 <div className="absolute -bottom-1 -right-1 w-9 h-9 bg-yellow-400 rounded-full flex items-center justify-center shadow-lg border-2 border-white">
@@ -85,8 +71,8 @@ export function AuthorProfile() {
         {/* Stats cards */}
         <div className="grid grid-cols-3 gap-4 mt-6">
           {[
-            { icon: Award, label: 'Kinh nghiệm', value: '10+ năm', color: 'text-indigo-600' },
-            { icon: BookOpen, label: 'Môn dạy', value: 'Tin học', color: 'text-purple-600' },
+            { icon: Award, label: 'Kinh nghiệm', value: '10+ năm', color: 'text-teal-600' },
+            { icon: BookOpen, label: 'Môn dạy', value: 'Tin học', color: 'text-emerald-600' },
             { icon: Heart, label: 'Tâm huyết', value: '100%', color: 'text-pink-600' },
           ].map(({ icon: Icon, label, value, color }) => (
             <div

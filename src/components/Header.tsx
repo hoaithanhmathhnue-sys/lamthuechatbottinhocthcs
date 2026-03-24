@@ -20,7 +20,7 @@ export function Header({ setIsMobileOpen }: HeaderProps) {
           <Menu className="w-6 h-6 text-slate-600 dark:text-slate-300" />
         </button>
         <h1 className="text-xl font-semibold text-slate-800 dark:text-white hidden sm:block">
-          Nền tảng học tập Tin học AI
+          Trợ lý tin học THCS
         </h1>
       </div>
 
@@ -49,7 +49,7 @@ export function Header({ setIsMobileOpen }: HeaderProps) {
         </button>
 
         {/* Avatar */}
-        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center text-white text-xs font-bold border-2 border-white dark:border-slate-800 shadow-sm">
+        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-teal-500 to-emerald-500 flex items-center justify-center text-white text-xs font-bold border-2 border-white dark:border-slate-800 shadow-sm">
           HS
         </div>
       </div>

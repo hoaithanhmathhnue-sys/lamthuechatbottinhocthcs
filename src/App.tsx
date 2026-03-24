@@ -1,21 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { Sidebar } from './components/Sidebar';
 import { Header } from './components/Header';
-import { Dashboard } from './components/Dashboard';
-import { SubjectList } from './components/SubjectList';
-import { Quiz } from './components/Quiz';
 import { AITutor } from './components/AITutor';
 import { History } from './components/History';
 import { SettingsModal } from './components/SettingsModal';
-import { PracticeMode } from './components/PracticeMode';
-import { Admin } from './components/Admin';
 import { AuthorProfile } from './components/AuthorProfile';
 import { useSettings} from './store';
 
 export default function App() {
-  const [currentView, setCurrentView] = useState('dashboard');
+  const [currentView, setCurrentView] = useState('tutor');
   const [isMobileOpen, setIsMobileOpen] = useState(false);
-  const [selectedSubject, setSelectedSubject] = useState<string | null>(null);
   const [settings] = useSettings();
 
   // Apply theme on mount
@@ -28,30 +22,17 @@ export default function App() {
   }, [settings.theme]);
 
   const renderContent = () => {
-    if (selectedSubject) {
-      return <Quiz subjectId={selectedSubject} onBack={() => setSelectedSubject(null)} />;
-    }
-
     switch (currentView) {
-      case 'dashboard':
-        return <Dashboard />;
-      case 'subjects':
-        return <SubjectList onSelectSubject={setSelectedSubject} />;
       case 'tutor':
         return <AITutor />;
       case 'history':
         return <History />;
-      case 'practice':
-        return <PracticeMode onBack={() => setCurrentView('dashboard')} />;
-
-      case 'admin':
-        return <Admin />;
       case 'author':
         return <AuthorProfile />;
       case 'settings':
-        return <Dashboard />;
+        return <AITutor />;
       default:
-        return <Dashboard />;
+        return <AITutor />;
     }
   };
 
@@ -75,7 +56,7 @@ export default function App() {
       </div>
 
       {currentView === 'settings' && (
-        <SettingsModal onClose={() => setCurrentView('dashboard')} />
+        <SettingsModal onClose={() => setCurrentView('tutor')} />
       )}
     </div>
   );

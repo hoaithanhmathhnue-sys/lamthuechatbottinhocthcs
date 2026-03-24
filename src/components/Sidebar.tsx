@@ -11,10 +11,7 @@ interface SidebarProps {
 
 export function Sidebar({ currentView, setCurrentView, isMobileOpen, setIsMobileOpen }: SidebarProps) {
   const navItems = [
-    { id: 'dashboard', label: 'Tổng quan', icon: LayoutDashboard },
-    { id: 'practice', label: 'Luyện tập', icon: Gamepad2 },
     { id: 'tutor', label: 'Gia sư AI', icon: BrainCircuit },
-    { id: 'admin', label: 'Quản trị', icon: ClipboardList },
     { id: 'history', label: 'Lịch sử', icon: History },
     { id: 'author', label: 'Tác giả', icon: User },
   ];
@@ -36,9 +33,9 @@ export function Sidebar({ currentView, setCurrentView, isMobileOpen, setIsMobile
       )}>
         {/* Logo */}
         <div className="flex items-center justify-center h-16 border-b border-slate-200 dark:border-slate-800">
-          <div className="flex items-center gap-2 text-indigo-600 font-bold text-xl">
-            <BrainCircuit className="w-8 h-8" />
-            <span>AI Edu</span>
+          <div className="flex items-center gap-2 text-teal-600 font-bold text-lg">
+            <BrainCircuit className="w-7 h-7" />
+            <span>Trợ lý THCS</span>
           </div>
         </div>
 
@@ -58,11 +55,11 @@ export function Sidebar({ currentView, setCurrentView, isMobileOpen, setIsMobile
                 className={cn(
                   "w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-sm font-medium",
                   isActive 
-                    ? "bg-indigo-50 dark:bg-indigo-950 text-indigo-600" 
+                    ? "bg-teal-50 dark:bg-teal-950 text-teal-600" 
                     : "text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white"
                 )}
               >
-                <Icon className={cn("w-5 h-5", isActive ? "text-indigo-600" : "text-slate-400")} />
+                <Icon className={cn("w-5 h-5", isActive ? "text-teal-600" : "text-slate-400")} />
                 {item.label}
               </button>
             );
@@ -78,7 +75,7 @@ export function Sidebar({ currentView, setCurrentView, isMobileOpen, setIsMobile
             className={cn(
               "w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-colors text-sm font-medium",
               currentView === 'settings'
-                ? "bg-indigo-50 dark:bg-indigo-950 text-indigo-600" 
+                ? "bg-teal-50 dark:bg-teal-950 text-teal-600" 
                 : "text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800"
             )}
           >
