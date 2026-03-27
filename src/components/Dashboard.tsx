@@ -1,13 +1,13 @@
 import React from 'react';
-import { useProgress, useSessions, useGamification, useCostTracker, useAllSubjects, useSelectedGrade } from '../store';
+import { useProgress, useSessions, useGamification, useAllSubjects, useSelectedGrade } from '../store';
 import { XP_PER_LEVEL } from '../data/demo';
-import { Target, Flame, Trophy, BookOpen, TrendingUp, Zap, DollarSign } from 'lucide-react';
+import { Target, Flame, Trophy, BookOpen, TrendingUp, Zap } from 'lucide-react';
 
 export function Dashboard() {
   const [progress] = useProgress();
   const [sessions] = useSessions();
   const [gamification] = useGamification();
-  const [costs] = useCostTracker();
+
   const { allSubjects } = useAllSubjects();
   const [selectedGrade] = useSelectedGrade();
 
@@ -27,8 +27,7 @@ export function Dashboard() {
     d.setDate(d.getDate() - 1);
   }
 
-  // Total cost
-  const totalCost = costs.reduce((s, c) => s + c.cost, 0);
+
 
   const stats = [
     { label: 'Tổng bài làm', value: totalAttempts, icon: Target, color: 'text-blue-600', bg: 'bg-blue-100' },
@@ -56,19 +55,11 @@ export function Dashboard() {
   return (
     <div className="p-6 lg:p-8 max-w-7xl mx-auto space-y-8 animate-fade-in">
       {/* Welcome */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-bold text-slate-900">Chào mừng trở lại! 👋</h2>
-          <p className="text-slate-500 mt-1">
-            Level {gamification.level} • {gamification.xp} XP • Tiếp tục chinh phục Tin học!
-          </p>
-        </div>
-        {totalCost > 0 && (
-          <div className="hidden md:flex items-center gap-2 px-4 py-2 bg-amber-50 text-amber-700 rounded-xl text-sm font-medium border border-amber-200">
-            <DollarSign className="w-4 h-4" />
-            Chi phí API: ${totalCost.toFixed(4)}
-          </div>
-        )}
+      <div>
+        <h2 className="text-2xl font-bold text-slate-900">Chào mừng trở lại! 👋</h2>
+        <p className="text-slate-500 mt-1">
+          Level {gamification.level} • {gamification.xp} XP • Tiếp tục chinh phục Tin học!
+        </p>
       </div>
 
       {/* XP Progress Bar */}
