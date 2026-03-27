@@ -1,5 +1,5 @@
 import React from 'react';
-import { BookOpen, BrainCircuit, LayoutDashboard, History, Settings, Gamepad2, Trophy, ClipboardList, BookMarked } from 'lucide-react';
+import { BookOpen, BrainCircuit, LayoutDashboard, History, Settings, Gamepad2, Trophy, ClipboardList, BookMarked, User } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { useGamification } from '../store';
 import { XP_PER_LEVEL } from '../data/demo';
@@ -87,22 +87,39 @@ export function Sidebar({ currentView, setCurrentView, isMobileOpen, setIsMobile
           })}
         </nav>
 
-        <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-slate-200 dark:border-slate-800">
-          <button
-            onClick={() => {
-              setCurrentView('settings');
-              setIsMobileOpen(false);
-            }}
-            className={cn(
-              "w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-colors text-sm font-medium",
-              currentView === 'settings'
-                ? "bg-indigo-50 dark:bg-indigo-950 text-indigo-600" 
-                : "text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800"
-            )}
-          >
-            <Settings className="w-5 h-5 text-slate-400" />
-            Cài đặt
-          </button>
+        <div className="absolute bottom-0 left-0 right-0 border-t border-slate-200 dark:border-slate-800">
+          {/* Author Info */}
+          <div className="px-4 pt-3 pb-2">
+            <div className="flex items-start gap-2.5">
+              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center flex-shrink-0 mt-0.5">
+                <User className="w-4 h-4 text-white" />
+              </div>
+              <div className="min-w-0">
+                <p className="text-xs font-bold text-slate-800 dark:text-slate-200 leading-tight">Cô Phạm Thị Bình</p>
+                <p className="text-[10px] text-slate-500 dark:text-slate-400 leading-tight mt-0.5">GV Tin học</p>
+                <p className="text-[10px] text-slate-500 dark:text-slate-400 leading-tight">THCS Lý Tự Trọng</p>
+                <p className="text-[10px] text-slate-500 dark:text-slate-400 leading-tight">Xã Vị Xuyên</p>
+              </div>
+            </div>
+          </div>
+          {/* Settings Button */}
+          <div className="px-4 pb-3">
+            <button
+              onClick={() => {
+                setCurrentView('settings');
+                setIsMobileOpen(false);
+              }}
+              className={cn(
+                "w-full flex items-center gap-3 px-4 py-2.5 rounded-xl transition-colors text-sm font-medium",
+                currentView === 'settings'
+                  ? "bg-indigo-50 dark:bg-indigo-950 text-indigo-600" 
+                  : "text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800"
+              )}
+            >
+              <Settings className="w-5 h-5 text-slate-400" />
+              Cài đặt
+            </button>
+          </div>
         </div>
       </div>
     </>
