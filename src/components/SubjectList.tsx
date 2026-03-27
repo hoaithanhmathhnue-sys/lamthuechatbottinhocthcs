@@ -49,7 +49,17 @@ export function SubjectList({ onSelectSubject }: SubjectListProps) {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {allSubjects.map((subject) => {
+        {!selectedGrade ? (
+          <div className="col-span-full py-12 text-center bg-white dark:bg-slate-800 rounded-2xl border border-dashed border-slate-300 dark:border-slate-700">
+            <div className="w-16 h-16 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-4">
+              <BookOpen className="w-8 h-8 text-slate-400" />
+            </div>
+            <h3 className="text-lg font-medium text-slate-900 dark:text-white mb-2">Vui lòng chọn lớp học</h3>
+            <p className="text-slate-500 dark:text-slate-400">Chọn một lớp học ở trên để hiển thị các môn học tương ứng.</p>
+          </div>
+        ) : allSubjects
+          .filter(subject => subject.grade === selectedGrade)
+          .map((subject) => {
           const Icon = iconMap[subject.icon] || BookOpen;
           const subSessions = sessions.filter(s => s.subjectId === subject.id);
           const avgScore = subSessions.length > 0

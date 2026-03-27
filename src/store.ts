@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { Settings, Progress, Session, ChatMessage, QuestionAnswer, CostRecord, SavedQuizState, ThemeMode, Question, GradeLevel, Subject } from './types';
-import { DEMO_SUBJECTS } from './data/demo';
+import { Settings, Progress, Session, ChatMessage, GamificationState, QuestionAnswer, CostRecord, SavedQuizState, ThemeMode, Question, GradeLevel, Subject } from './types';
+import { ALL_ACHIEVEMENTS, DEMO_SUBJECTS } from './data/demo';
 
 const defaultSettings: Settings = {
   theme: 'light',
@@ -20,6 +20,15 @@ const defaultProgress: Progress = {
   lastStudyDate: undefined,
 };
 
+const defaultGamification: GamificationState = {
+  xp: 0,
+  level: 1,
+  badges: [],
+  achievements: ALL_ACHIEVEMENTS.map(a => ({ ...a })),
+  totalCorrect: 0,
+  totalAnswered: 0,
+  longestStreak: 0,
+};
 
 export function useLocalStorage<T>(key: string, initialValue: T) {
   const [storedValue, setStoredValue] = useState<T>(() => {
@@ -61,6 +70,9 @@ export function useChatHistory() {
   return useLocalStorage<ChatMessage[]>('ai_edu_chat_history', []);
 }
 
+export function useGamification() {
+  return useLocalStorage<GamificationState>('ai_edu_gamification', defaultGamification);
+}
 
 export function useWrongAnswers() {
   return useLocalStorage<QuestionAnswer[]>('ai_edu_wrong_answers', []);
@@ -76,6 +88,10 @@ export function useSavedQuiz() {
 
 export function useCustomQuestions() {
   return useLocalStorage<Question[]>('ai_edu_custom_questions', []);
+}
+
+export function useReadLessons() {
+  return useLocalStorage<string[]>('ai_edu_read_lessons', []);
 }
 
 // Theme hook

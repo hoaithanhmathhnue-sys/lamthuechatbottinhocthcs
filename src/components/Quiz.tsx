@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { DEMO_QUESTIONS } from '../data/demo';
-import { useProgress, useSessions, useSettings, useWrongAnswers, useCustomQuestions, useSavedQuiz, useSelectedGrade, useAllSubjects } from '../store';
+import { useProgress, useSessions, useSettings, useGamification, useWrongAnswers, useCustomQuestions, useSavedQuiz, useSelectedGrade, useAllSubjects } from '../store';
 import { callGeminiAI } from '../lib/gemini';
 import { Question } from '../types';
-import { ArrowLeft, Clock, CheckCircle2, XCircle, BrainCircuit, Loader2 } from 'lucide-react';
+import { ArrowLeft, Clock, CheckCircle2, XCircle, BrainCircuit, Loader2, Zap } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import Swal from 'sweetalert2';
@@ -18,6 +18,7 @@ export function Quiz({ subjectId, onBack }: QuizProps) {
   const [settings] = useSettings();
   const [progress, setProgress] = useProgress();
   const [sessions, setSessions] = useSessions();
+  const [gamification, setGamification] = useGamification();
   const [wrongAnswers, setWrongAnswers] = useWrongAnswers();
   const [customQuestions] = useCustomQuestions();
   const [savedQuiz, setSavedQuiz] = useSavedQuiz();
@@ -37,7 +38,7 @@ export function Quiz({ subjectId, onBack }: QuizProps) {
   const [timeLeft, setTimeLeft] = useState(600);
   const [aiExplanation, setAiExplanation] = useState<string | null>(null);
   const [isAiLoading, setIsAiLoading] = useState(false);
-
+  const [xpEarnedThisQuiz, setXpEarnedThisQuiz] = useState(0);
   
   const currentQuestion = questions[currentIndex];
 
@@ -107,7 +108,8 @@ export function Quiz({ subjectId, onBack }: QuizProps) {
     
     if (isCorrect) {
       setScore(score + 1);
-
+      const xp = currentQuestion.difficulty === 'hard' ? 20 : currentQuestion.difficulty === 'medium' ? 15 : 10;
+      setXpEarnedThisQuiz(prev => prev + xp);
     } else {
       // Track wrong answer
       setWrongAnswers([...wrongAnswers, {
@@ -143,7 +145,7 @@ export function Quiz({ subjectId, onBack }: QuizProps) {
       timeSpent: 600 - timeLeft,
       date: new Date().toISOString(),
       mode: 'standard' as const,
-
+      xpEarned: xpEarnedThisQuiz,
     };
     
     setSessions([newSession, ...sessions]);
@@ -158,12 +160,21 @@ export function Quiz({ subjectId, onBack }: QuizProps) {
       lastStudyDate: new Date().toISOString(),
     });
 
-
+    // Update gamification
+    const newXp = gamification.xp + xpEarnedThisQuiz;
+    setGamification({
+      ...gamification,
+      xp: newXp,
+      level: Math.floor(newXp / 100) + 1,
+      totalAnswered: gamification.totalAnswered + questions.length,
+      totalCorrect: gamification.totalCorrect + score,
+    });
 
     Swal.fire({
       title: finalScore >= 80 ? '🎉 Xuất sắc!' : '✅ Hoàn thành!',
       html: `
         <p style="font-size:18px;margin:10px 0">Bạn đạt <strong>${finalScore} điểm</strong> (${score}/${questions.length} câu đúng)</p>
+        <p style="color:#6366f1;font-weight:bold;font-size:16px">+${xpEarnedThisQuiz} XP</p>
       `,
       icon: finalScore >= 80 ? 'success' : 'info',
       confirmButtonText: 'Quay lại',
@@ -226,6 +237,10 @@ export function Quiz({ subjectId, onBack }: QuizProps) {
       <div className="bg-white dark:bg-slate-800 p-4 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700">
         <div className="flex justify-between text-sm font-medium text-slate-500 mb-2">
           <span>Câu hỏi {currentIndex + 1} / {questions.length}</span>
+          <div className="flex items-center gap-2">
+            <Zap className="w-3.5 h-3.5 text-amber-500" />
+            <span className="text-amber-600">+{xpEarnedThisQuiz} XP</span>
+          </div>
         </div>
         <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
           <div 

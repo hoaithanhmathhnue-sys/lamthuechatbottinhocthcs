@@ -97,8 +97,8 @@ export function GradeSelector({ selectedGrade, onSelectGrade, compact }: GradeSe
       </div>
 
       {/* Grade level groups */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-        {(['primary', 'secondary', 'highschool'] as const).map(key => {
+      <div className="grid grid-cols-1 gap-3 max-w-lg mx-auto">
+        {(['secondary'] as const).map(key => {
           const level = GRADE_LEVELS[key];
           const style = levelStyles[key];
           return (

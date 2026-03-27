@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { DEMO_QUESTIONS } from '../data/demo';
-import { useCustomQuestions, useWrongAnswers, useSelectedGrade } from '../store';
+import { useCustomQuestions, useWrongAnswers, useGamification, useSelectedGrade } from '../store';
 import { Question, GradeLevel } from '../types';
 import {
   Zap, RotateCcw, FileText, Layers, ArrowLeft, ArrowRight,
@@ -215,7 +215,7 @@ function SpeedQuiz({ questions, onBack }: { questions: Question[]; onBack: () =>
   const [timeLeft, setTimeLeft] = useState(10);
   const [selected, setSelected] = useState<string | null>(null);
   const [finished, setFinished] = useState(false);
-
+  const [gamification, setGamification] = useGamification();
 
   const q = shuffled[index];
 
@@ -240,6 +240,15 @@ function SpeedQuiz({ questions, onBack }: { questions: Question[]; onBack: () =>
 
   const handleNext = () => {
     if (index >= shuffled.length - 1) {
+      // Award XP
+      const xpEarned = score * 15;
+      setGamification({
+        ...gamification,
+        xp: gamification.xp + xpEarned,
+        level: Math.floor((gamification.xp + xpEarned) / 100) + 1,
+        totalAnswered: gamification.totalAnswered + shuffled.length,
+        totalCorrect: gamification.totalCorrect + score,
+      });
       setFinished(true);
     } else {
       setIndex(i => i + 1);
@@ -254,7 +263,7 @@ function SpeedQuiz({ questions, onBack }: { questions: Question[]; onBack: () =>
       <div className="p-8 max-w-md mx-auto text-center animate-slide-up space-y-6">
         <div className="text-6xl">{pct >= 80 ? '🎉' : pct >= 50 ? '👍' : '💪'}</div>
         <h2 className="text-3xl font-bold text-slate-900 dark:text-white">{pct}%</h2>
-        <p className="text-slate-500 dark:text-slate-400">{score}/{shuffled.length} câu đúng</p>
+        <p className="text-slate-500 dark:text-slate-400">{score}/{shuffled.length} câu đúng • +{score * 15} XP</p>
         <button onClick={onBack} className="px-8 py-3 bg-indigo-600 text-white rounded-xl font-bold">
           Quay lại
         </button>
@@ -326,7 +335,7 @@ function ExamMode({ questions, onBack }: { questions: Question[]; onBack: () => 
   const [answers, setAnswers] = useState<Record<number, string>>({});
   const [submitted, setSubmitted] = useState(false);
   const [timeLeft, setTimeLeft] = useState(1200); // 20 minutes
-
+  const [gamification, setGamification] = useGamification();
 
   React.useEffect(() => {
     if (submitted || timeLeft <= 0) {
@@ -339,6 +348,15 @@ function ExamMode({ questions, onBack }: { questions: Question[]; onBack: () => 
 
   const handleSubmit = () => {
     setSubmitted(true);
+    const correct = examQs.filter((q, i) => answers[i] === q.correctAnswer).length;
+    const xpEarned = correct * 10;
+    setGamification({
+      ...gamification,
+      xp: gamification.xp + xpEarned,
+      level: Math.floor((gamification.xp + xpEarned) / 100) + 1,
+      totalAnswered: gamification.totalAnswered + examQs.length,
+      totalCorrect: gamification.totalCorrect + correct,
+    });
   };
 
   const formatTime = (s: number) => `${Math.floor(s / 60)}:${(s % 60).toString().padStart(2, '0')}`;
@@ -352,7 +370,7 @@ function ExamMode({ questions, onBack }: { questions: Question[]; onBack: () => 
           <div className="text-5xl">{pct >= 80 ? '🎓' : pct >= 50 ? '📝' : '📖'}</div>
           <h2 className="text-3xl font-bold text-slate-900 dark:text-white">Kết quả thi thử</h2>
           <p className="text-4xl font-bold text-indigo-600">{pct} điểm</p>
-          <p className="text-slate-500 dark:text-slate-400">{correct}/{examQs.length} câu đúng</p>
+          <p className="text-slate-500 dark:text-slate-400">{correct}/{examQs.length} câu đúng • +{correct * 10} XP</p>
           <p className={pct >= 80 ? 'text-emerald-600 font-bold' : 'text-amber-600 font-bold'}>
             {pct >= 80 ? '✅ ĐẠT — Tuyệt vời!' : '⚠️ Cần cố gắng thêm'}
           </p>

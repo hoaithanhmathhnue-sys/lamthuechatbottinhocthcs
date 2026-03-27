@@ -1,6 +1,6 @@
 import React from 'react';
-import { Menu, Moon, Sun } from 'lucide-react';
-import { useSettings, useTheme } from '../store';
+import { Menu, Moon, Sun, Zap } from 'lucide-react';
+import { useSettings, useGamification, useTheme } from '../store';
 
 interface HeaderProps {
   setIsMobileOpen: (open: boolean) => void;
@@ -8,6 +8,7 @@ interface HeaderProps {
 
 export function Header({ setIsMobileOpen }: HeaderProps) {
   const [settings] = useSettings();
+  const [gamification] = useGamification();
   const { theme, toggleTheme } = useTheme();
 
   return (
@@ -20,12 +21,16 @@ export function Header({ setIsMobileOpen }: HeaderProps) {
           <Menu className="w-6 h-6 text-slate-600 dark:text-slate-300" />
         </button>
         <h1 className="text-xl font-semibold text-slate-800 dark:text-white hidden sm:block">
-          Trợ lý tin học THCS
+          Nền tảng học tập Tin học AI
         </h1>
       </div>
 
       <div className="flex items-center gap-3">
-
+        {/* XP Badge */}
+        <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-indigo-50 dark:bg-indigo-950 text-indigo-600 rounded-full text-sm font-bold">
+          <Zap className="w-3.5 h-3.5" />
+          {gamification.xp} XP
+        </div>
 
         {/* API Key warning */}
         {!settings.apiKey && (
@@ -49,8 +54,8 @@ export function Header({ setIsMobileOpen }: HeaderProps) {
         </button>
 
         {/* Avatar */}
-        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-teal-500 to-emerald-500 flex items-center justify-center text-white text-xs font-bold border-2 border-white dark:border-slate-800 shadow-sm">
-          HS
+        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center text-white text-xs font-bold border-2 border-white dark:border-slate-800 shadow-sm">
+          {gamification.level}
         </div>
       </div>
     </header>

@@ -1,4 +1,4 @@
-export type GradeLevel = 6 | 7 | 8 | 9;
+export type GradeLevel = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
 
 export interface Subject {
   id: string;
@@ -31,6 +31,7 @@ export interface Session {
   timeSpent: number;
   date: string;
   mode?: QuizMode;
+  xpEarned?: number;
 }
 
 export interface Progress {
@@ -79,6 +80,36 @@ export interface QuestionAnswer {
   date: string;
 }
 
+export interface Badge {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  color: string;
+  unlockedAt?: string;
+}
+
+export interface Achievement {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  target: number;
+  current: number;
+  completed: boolean;
+  completedAt?: string;
+}
+
+export interface GamificationState {
+  xp: number;
+  level: number;
+  badges: Badge[];
+  achievements: Achievement[];
+  totalCorrect: number;
+  totalAnswered: number;
+  longestStreak: number;
+}
+
 export interface CostRecord {
   date: string;
   model: string;
@@ -96,4 +127,24 @@ export interface SavedQuizState {
   mode: QuizMode;
   savedAt: string;
   questionIds: string[];
+}
+
+export interface TextbookLesson {
+  id: string;
+  title: string;
+  content: string; // Markdown content
+  keyConcepts: string[];
+  grade: GradeLevel;
+  chapterIndex: number;
+  lessonIndex: number;
+  icon?: string;
+}
+
+export interface TextbookChapter {
+  id: string;
+  title: string;
+  description: string;
+  lessons: TextbookLesson[];
+  grade: GradeLevel;
+  icon: string;
 }

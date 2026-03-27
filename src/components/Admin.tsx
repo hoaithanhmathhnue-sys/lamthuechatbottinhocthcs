@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { useCustomQuestions, useSettings, useAllSubjects } from '../store';
-import { DEMO_QUESTIONS } from '../data/demo';
+import { DEMO_QUESTIONS, GRADES } from '../data/demo';
 import { extractTextFromFile, parseQuestionsFromText } from '../lib/fileParser';
 import { generateQuestionsAI } from '../lib/gemini';
 import { Question } from '../types';
@@ -19,8 +19,10 @@ export function Admin() {
   const { allSubjects, customSubjects, addSubject, updateSubject, deleteSubject } = useAllSubjects();
   const [activeTab, setActiveTab] = useState<'list' | 'add' | 'import' | 'ai' | 'subjects'>('list');
 
+  const allowedGrades = new Set(GRADES.map((g: any) => g.value));
+  const filteredAllSubjects = allSubjects.filter(s => !s.grade || allowedGrades.has(s.grade));
   const allCustom = customQuestions;
-  const totalBySubject = allSubjects.map(s => ({
+  const totalBySubject = filteredAllSubjects.map(s => ({
     ...s,
     demoCount: DEMO_QUESTIONS.filter(q => q.subjectId === s.id).length,
     customCount: allCustom.filter(q => q.subjectId === s.id).length,
@@ -50,7 +52,7 @@ export function Admin() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {totalBySubject.map(s => (
           <div key={s.id} className="bg-white dark:bg-slate-800 rounded-xl p-4 border border-slate-200 dark:border-slate-700 shadow-sm">
-            <p className="text-sm font-medium text-slate-500 dark:text-slate-400 truncate">{s.name}</p>
+            <p className="text-sm font-medium text-slate-500 dark:text-slate-400 truncate">{s.grade ? `[Lớp ${s.grade}] ` : ''}{s.name}</p>
             <p className="text-2xl font-bold text-slate-900 dark:text-white mt-1">
               {s.demoCount + s.customCount}
             </p>
@@ -90,7 +92,7 @@ export function Admin() {
       </div>
 
       {/* Tab Content */}
-      {activeTab === 'list' && <QuestionList questions={allCustom} subjects={allSubjects} onDelete={(id) => {
+      {activeTab === 'list' && <QuestionList questions={allCustom} subjects={filteredAllSubjects} onDelete={(id) => {
         setCustomQuestions(allCustom.filter(q => q.id !== id));
       }} onEdit={(q) => setEditingQuestion(q)} onClearAll={() => {
         Swal.fire({
@@ -109,14 +111,14 @@ export function Admin() {
         });
       }} />}
 
-      {activeTab === 'add' && <ManualQuestionForm subjects={allSubjects} onSave={(q) => {
+      {activeTab === 'add' && <ManualQuestionForm subjects={filteredAllSubjects} onSave={(q) => {
         setCustomQuestions([...allCustom, q]);
         Swal.fire({ icon: 'success', title: 'Đã thêm câu hỏi!', toast: true, position: 'top-end', timer: 2000, showConfirmButton: false });
       }} />}
 
       {activeTab === 'import' && <FileImport
         apiKey={settings.apiKey}
-        subjects={allSubjects}
+        subjects={filteredAllSubjects}
         onImport={(questions) => {
           setCustomQuestions([...allCustom, ...questions]);
         }}
@@ -126,7 +128,7 @@ export function Admin() {
         apiKey={settings.apiKey}
         modelId={settings.selectedModel}
         apiKeys={settings.apiKeys}
-        subjects={allSubjects}
+        subjects={filteredAllSubjects}
         onImport={(questions) => {
           setCustomQuestions([...allCustom, ...questions]);
         }}
@@ -135,7 +137,7 @@ export function Admin() {
       {/* Subject Management Tab */}
       {activeTab === 'subjects' && (
         <SubjectManager
-          allSubjects={allSubjects}
+          allSubjects={filteredAllSubjects}
           customSubjects={customSubjects}
           onAdd={addSubject}
           onUpdate={updateSubject}
@@ -147,7 +149,7 @@ export function Admin() {
       {editingQuestion && (
         <EditQuestionModal
           question={editingQuestion}
-          subjects={allSubjects}
+          subjects={filteredAllSubjects}
           onSave={handleSaveEdit}
           onClose={() => setEditingQuestion(null)}
         />
@@ -196,7 +198,7 @@ function EditQuestionModal({ question, subjects, onSave, onClose }: {
               <label className="block text-xs font-bold text-slate-600 dark:text-slate-400 mb-1 uppercase">Môn</label>
               <select value={subjectId} onChange={e => setSubjectId(e.target.value)}
                 className="w-full p-2.5 border border-slate-300 dark:border-slate-600 rounded-xl text-sm bg-white dark:bg-slate-900">
-                {subjects.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+                {subjects.map(s => <option key={s.id} value={s.id}>{s.grade ? `[Lớp ${s.grade}] ` : ''}{s.name}</option>)}
               </select>
             </div>
             <div>
@@ -284,7 +286,7 @@ function QuestionList({ questions, subjects, onDelete, onEdit, onClearAll }: {
           <option value="all">Tất cả môn ({questions.length})</option>
           {subjects.map(s => {
             const count = questions.filter(q => q.subjectId === s.id).length;
-            return count > 0 ? <option key={s.id} value={s.id}>{s.name} ({count})</option> : null;
+            return count > 0 ? <option key={s.id} value={s.id}>{s.grade ? `[Lớp ${s.grade}] ` : ''}{s.name} ({count})</option> : null;
           })}
         </select>
         <div className="flex items-center gap-2">
@@ -405,7 +407,7 @@ function ManualQuestionForm({ onSave, subjects }: { onSave: (q: Question) => voi
           <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">Môn học</label>
           <select value={subjectId} onChange={e => setSubjectId(e.target.value)}
             className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 outline-none focus:border-indigo-500 text-sm">
-            {subjects.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+            {subjects.map(s => <option key={s.id} value={s.id}>{s.grade ? `[Lớp ${s.grade}] ` : ''}{s.name}</option>)}
           </select>
         </div>
         <div className="space-y-1.5">
@@ -541,7 +543,7 @@ function FileImport({ apiKey, subjects, onImport }: {
           <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">Phân loại vào môn</label>
           <select value={subjectId} onChange={e => setSubjectId(e.target.value)}
             className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 outline-none focus:border-indigo-500 text-sm">
-            {subjects.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+            {subjects.map(s => <option key={s.id} value={s.id}>{s.grade ? `[Lớp ${s.grade}] ` : ''}{s.name}</option>)}
           </select>
         </div>
 
@@ -667,7 +669,7 @@ function AIGenerator({ apiKey, modelId, apiKeys, subjects, onImport }: {
           <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">Phân loại vào môn</label>
           <select value={subjectId} onChange={e => setSubjectId(e.target.value)}
             className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 outline-none focus:border-indigo-500 text-sm">
-            {subjects.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+            {subjects.map(s => <option key={s.id} value={s.id}>{s.grade ? `[Lớp ${s.grade}] ` : ''}{s.name}</option>)}
           </select>
         </div>
 
@@ -798,8 +800,8 @@ function SubjectManager({ allSubjects, customSubjects, onAdd, onUpdate, onDelete
           className="px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 outline-none focus:border-indigo-500 text-sm"
         >
           <option value="all">Tất cả lớp</option>
-          {Array.from({ length: 12 }, (_, i) => i + 1).map(g => (
-            <option key={g} value={g}>Lớp {g}</option>
+          {GRADES.map((g: any) => (
+            <option key={g.value} value={g.value}>Lớp {g.value}</option>
           ))}
         </select>
       </div>
@@ -811,8 +813,8 @@ function SubjectManager({ allSubjects, customSubjects, onAdd, onUpdate, onDelete
           onChange={e => setNewGrade(Number(e.target.value))}
           className="w-28 px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 outline-none focus:border-indigo-500 text-sm"
         >
-          {Array.from({ length: 12 }, (_, i) => i + 1).map(g => (
-            <option key={g} value={g}>Lớp {g}</option>
+          {GRADES.map((g: any) => (
+            <option key={g.value} value={g.value}>Lớp {g.value}</option>
           ))}
         </select>
         <input
@@ -847,8 +849,8 @@ function SubjectManager({ allSubjects, customSubjects, onAdd, onUpdate, onDelete
                       onChange={e => setEditGrade(Number(e.target.value))}
                       className="w-24 px-3 py-1.5 rounded-lg border border-indigo-300 dark:border-indigo-600 bg-white dark:bg-slate-800 outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
                     >
-                      {Array.from({ length: 12 }, (_, i) => i + 1).map(g => (
-                        <option key={g} value={g}>Lớp {g}</option>
+                      {GRADES.map((g: any) => (
+                        <option key={g.value} value={g.value}>Lớp {g.value}</option>
                       ))}
                     </select>
                     <input
